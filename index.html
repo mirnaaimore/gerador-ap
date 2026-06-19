@@ -1,256 +1,466 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Etiquetas A&P</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        /* Painel de Controle em Tela */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        .config-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            max-width: 500px;
-            margin: 0 auto 30px auto;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #cc0000;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #aa0000;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Etiquetas A&P</title>
 
-        #print-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-        /* ÁREA DA ETIQUETA CORRIGIDA: Forçando 100mm x 50mm */
-        .zebra-label {
-            width: 100mm;
-            height: 50mm;
-            background: white;
-            border: 1px dashed #bbb; /* Referência visual na tela */
-            padding: 5mm 8mm 5mm 5mm; /* Margens internas seguras */
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            overflow: hidden;
-            page-break-after: always !important;
-            break-inside: avoid !important;
-        }
+<style>
 
-        /* Bloco Esquerdo: QR Code + Texto */
-        .left-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 35mm; /* Proporcional ao novo tamanho */
-            height: 100%;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+}
 
-        .qrcode-box {
-            width: 32mm;
-            height: 32mm;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f5f5;
+    padding:20px;
+}
 
-        .label-code-text {
-            font-size: 12pt;
-            font-weight: normal;
-            text-align: center;
-            white-space: nowrap;
-            margin-top: 2mm;
-            font-family: Arial, sans-serif;
-            letter-spacing: 0.5px;
-            color: #000;
-        }
+.container{
+    max-width:700px;
+    margin:auto;
+}
 
-        /* Bloco Direito Otimizado */
-        .fields-container {
-            flex-grow: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* Distribui os campos verticalmente */
-            box-sizing: border-box;
-            padding-left: 5mm;
-            padding-top: 2mm;
-            padding-bottom: 2mm;
-        }
+.card{
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.15);
+}
 
-        .field-item {
-            font-size: 16pt; /* Aumentado para melhor leitura no tamanho 100x50 */
-            font-weight: bold;
-            color: #000;
-            white-space: nowrap;
-            display: flex;
-            align-items: flex-end;
-            width: 100%;
-        }
+h1{
+    text-align:center;
+    color:#c00000;
+    margin-bottom:20px;
+}
 
-        /* Linha automática comprida */
-        .line-fill {
-            flex-grow: 1;
-            border-bottom: 2px solid #000;
-            margin-left: 8px;
-            margin-bottom: 4px;
-        }
+.form-group{
+    margin-bottom:15px;
+}
 
-        /* CORREÇÃO DO SPOOLER DE IMPRESSÃO ZEBRA */
-        @media print {
-            @page {
-                size: 100mm 50mm; /* Tamanho exato da sua etiqueta física */
-                margin: 0 !important;
-            }
-            html, body {
-                margin: 0 !important;
-                padding: 0 !important;
-                background: white;
-                width: 100mm;
-                height: 50mm;
-            }
-            .config-panel {
-                display: none !important;
-            }
-            .zebra-label {
-                border: none !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-                width: 100mm !important;
-                height: 50mm !important;
-                page-break-after: always !important;
-            }
-        }
-    </style>
+label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    font-size:16px;
+}
+
+.row{
+    display:flex;
+    gap:10px;
+}
+
+.row .form-group{
+    flex:1;
+}
+
+button{
+    width:100%;
+    border:none;
+    padding:14px;
+    margin-top:10px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:bold;
+    border-radius:8px;
+}
+
+.btn-print{
+    background:#c00000;
+    color:white;
+}
+
+.btn-reset{
+    background:#333;
+    color:white;
+}
+
+.info{
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+    color:#666;
+}
+
+.preview-title{
+    margin:30px 0 10px;
+    text-align:center;
+    font-weight:bold;
+}
+
+/* ETIQUETA */
+
+.zebra-label{
+
+    width:100mm;
+    height:50mm;
+
+    background:white;
+
+    display:flex;
+
+    padding:2mm;
+
+    border:1px dashed #bbb;
+
+    margin:auto;
+
+    overflow:hidden;
+}
+
+.left-side{
+
+    width:34mm;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.qr-box{
+
+    width:28mm;
+    height:28mm;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.code-text{
+
+    margin-top:2mm;
+
+    font-size:12px;
+    font-weight:bold;
+
+    text-align:center;
+
+    letter-spacing:1px;
+}
+
+.right-side{
+
+    flex:1;
+
+    display:flex;
+    flex-direction:column;
+
+    justify-content:space-evenly;
+
+    padding-left:4mm;
+}
+
+.field{
+
+    display:flex;
+    align-items:flex-end;
+
+    font-size:6mm;
+    font-weight:bold;
+}
+
+.line{
+
+    flex:1;
+
+    border-bottom:1.5px solid black;
+
+    margin-left:3mm;
+    margin-bottom:1mm;
+}
+
+#print-area{
+    display:none;
+}
+
+@media print{
+
+    @page{
+        size:100mm 50mm;
+        margin:0;
+    }
+
+    body{
+        background:white;
+        padding:0;
+    }
+
+    .container{
+        display:none;
+    }
+
+    #print-area{
+        display:block;
+    }
+
+    .zebra-label{
+        border:none;
+        margin:0;
+        page-break-after:always;
+    }
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="config-panel">
-        <h2 style="text-align: center; margin-top: 0; color: #cc0000;">Etiquetas A&P</h2>
-        
+<div class="container">
+
+    <div class="card">
+
+        <h1>Gerador de Etiquetas A&P</h1>
+
         <div class="form-group">
-            <label>Prefixo do Código:</label>
-            <input type="text" id="prefix" value="2026-FLA">
+            <label>Prefixo</label>
+            <input id="prefix" value="2026-FLA">
         </div>
-        
-        <div class="form-group" style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label>Número Inicial:</label>
-                <input type="number" id="start-num" value="1">
+
+        <div class="row">
+
+            <div class="form-group">
+                <label>Primeiro Número</label>
+                <input type="number" id="start">
             </div>
-            <div style="flex: 1;">
-                <label>Número Final:</label>
-                <input type="number" id="end-num" value="50">
+
+            <div class="form-group">
+                <label>Quantidade</label>
+                <input type="number" id="quantity" value="100">
             </div>
+
         </div>
 
         <div class="form-group">
-            <label>Dígitos do Sequencial:</label>
+            <label>Dígitos do Sequencial</label>
             <input type="number" id="padding" value="4">
         </div>
 
-        <button onclick="generateLabels()">Gerar e Abrir Impressão</button>
+        <button class="btn-print" onclick="generateAndPrint()">
+            GERAR E IMPRIMIR
+        </button>
+
+        <button class="btn-reset" onclick="resetCounter()">
+            ZERAR SEQUÊNCIA
+        </button>
+
+        <div class="info">
+            Último número salvo:
+            <span id="last-number">0</span>
+        </div>
+
     </div>
 
-    <div id="print-area"></div>
+    <div class="preview-title">
+        Pré-visualização
+    </div>
 
-    <script>
-        window.onload = function() {
-            const savedLastNum = localStorage.getItem('lastPrintedNumber');
-            if (savedLastNum) {
-                const nextStart = parseInt(savedLastNum) + 1;
-                document.getElementById('start-num').value = nextStart;
-                document.getElementById('end-num').value = nextStart + 49;
-            }
-        };
+    <div id="preview"></div>
 
-        function generateLabels() {
-            const prefix = document.getElementById('prefix').value;
-            const startNum = parseInt(document.getElementById('start-num').value);
-            const endNum = parseInt(document.getElementById('end-num').value);
-            const padding = parseInt(document.getElementById('padding').value);
-            const printArea = document.getElementById('print-area');
-            
-            printArea.innerHTML = '';
+</div>
 
-            // Conversão aproximada de 32mm para pixels para o gerador de QR Code (~120px)
-            const qrSizeInPx = 120;
+<div id="print-area"></div>
 
-            for (let i = startNum; i <= endNum; i++) {
-                const numString = String(i).padStart(padding, '0');
-                const fullCode = `${prefix}${numString}`;
+<script>
 
-                const label = document.createElement('div');
-                label.className = 'zebra-label';
-                
-                label.innerHTML = `
-                    <div class="left-block">
-                        <div class="qrcode-box" id="qr-${i}"></div>
-                        <div class="label-code-text">${fullCode}</div>
-                    </div>
-                    <div class="fields-container">
-                        <div class="field-item">Data:<div class="line-fill"></div></div>
-                        <div class="field-item">Local:<div class="line-fill"></div></div>
-                        <div class="field-item">Recebido:<div class="line-fill"></div></div>
-                    </div>
-                `;
+function loadCounter(){
 
-                printArea.appendChild(label);
+    let last =
+        localStorage.getItem("lastPrintedNumber");
 
-                new QRCode(document.getElementById(`qr-${i}`), {
-                    text: fullCode,
-                    width: qrSizeInPx,
-                    height: qrSizeInPx,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.M
-                });
-            }
+    if(!last){
+        last = 0;
+    }
 
-            localStorage.setItem('lastPrintedNumber', endNum);
+    document.getElementById("last-number").innerText = last;
 
-            setTimeout(() => {
-                window.print();
-            }, 500);
+    document.getElementById("start").value =
+        parseInt(last) + 1;
+
+    createPreview();
+}
+
+function resetCounter(){
+
+    if(confirm("Deseja realmente zerar a sequência?")){
+
+        localStorage.removeItem(
+            "lastPrintedNumber"
+        );
+
+        loadCounter();
+    }
+}
+
+function createLabelHTML(code,id){
+
+    return `
+        <div class="zebra-label">
+
+            <div class="left-side">
+
+                <div class="qr-box" id="${id}"></div>
+
+                <div class="code-text">
+                    ${code}
+                </div>
+
+            </div>
+
+            <div class="right-side">
+
+                <div class="field">
+                    Data
+                    <div class="line"></div>
+                </div>
+
+                <div class="field">
+                    Local
+                    <div class="line"></div>
+                </div>
+
+                <div class="field">
+                    Recebido
+                    <div class="line"></div>
+                </div>
+
+            </div>
+
+        </div>
+    `;
+}
+
+function createPreview(){
+
+    const prefix =
+        document.getElementById("prefix").value;
+
+    const start =
+        parseInt(document.getElementById("start").value || 1);
+
+    const padding =
+        parseInt(document.getElementById("padding").value || 4);
+
+    const code =
+        prefix + String(start).padStart(padding,"0");
+
+    const preview =
+        document.getElementById("preview");
+
+    preview.innerHTML =
+        createLabelHTML(code,"previewQR");
+
+    new QRCode(
+        document.getElementById("previewQR"),
+        {
+            text:code,
+            width:150,
+            height:150
         }
-    </script>
+    );
+}
+
+function generateAndPrint(){
+
+    const prefix =
+        document.getElementById("prefix").value;
+
+    const start =
+        parseInt(document.getElementById("start").value);
+
+    const quantity =
+        parseInt(document.getElementById("quantity").value);
+
+    const padding =
+        parseInt(document.getElementById("padding").value);
+
+    const printArea =
+        document.getElementById("print-area");
+
+    printArea.innerHTML = "";
+
+    let current = start;
+
+    for(let i=0;i<quantity;i++){
+
+        const code =
+            prefix +
+            String(current)
+            .padStart(padding,"0");
+
+        const qrId = "qr" + current;
+
+        printArea.innerHTML +=
+            createLabelHTML(code,qrId);
+
+        current++;
+    }
+
+    setTimeout(()=>{
+
+        for(let i=start;i<start+quantity;i++){
+
+            const code =
+                prefix +
+                String(i)
+                .padStart(padding,"0");
+
+            new QRCode(
+                document.getElementById("qr"+i),
+                {
+                    text:code,
+                    width:150,
+                    height:150
+                }
+            );
+        }
+
+        localStorage.setItem(
+            "lastPrintedNumber",
+            start + quantity - 1
+        );
+
+        setTimeout(()=>{
+
+            window.print();
+
+            loadCounter();
+
+        },1000);
+
+    },300);
+}
+
+document
+.getElementById("prefix")
+.addEventListener("input",createPreview);
+
+document
+.getElementById("start")
+.addEventListener("input",createPreview);
+
+document
+.getElementById("padding")
+.addEventListener("input",createPreview);
+
+loadCounter();
+
+</script>
+
 </body>
 </html>
+```
