@@ -5,9 +5,9 @@
     <title>Etiquetas A&P</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        /* Configurações do painel na tela */
+        /* Painel de Controle em Tela */
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 20px;
             background-color: #f4f4f9;
             color: #333;
@@ -56,102 +56,106 @@
             align-items: center;
         }
 
-        /* CONFIGURAÇÃO EXPANDIDA PARA OCUPAR TODA A ETIQUETA FÍSICA */
+        /* MÁXIMA ESCALA: Travado em pixels de proporção real (proporção de ~2.4)
+           Elimina a interpretação errada de milímetros do navegador.
+        */
         .zebra-label {
-            width: 84.9mm;
-            height: 35.6mm;
-            max-height: 35.6mm;
+            width: 640px;
+            height: 270px;
             background: white;
-            border: 1px dashed #ccc; /* Linha de referência na tela */
-            padding: 1.5mm 2.5mm; /* Margens mínimas para colar nas bordas físicas */
+            border: 1px dashed #bbb; /* Referência em monitor */
+            padding: 10px 15px;
             box-sizing: border-box;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             overflow: hidden;
             page-break-after: always !important;
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
+            break-after: page !important;
         }
 
-        /* Bloco Esquerdo: QR Code Robusto + Código Legível */
+        /* Container do QR: Ocupa toda a altura disponível da esquerda */
         .left-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 32mm;
+            width: 200px;
             height: 100%;
         }
 
         .qrcode-box {
-            width: 115px; /* Tamanho ampliado para preencher a altura da etiqueta */
-            height: 115px;
+            width: 165px; /* QR Code maximizado */
+            height: 165px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 1mm;
         }
 
         .label-code-text {
-            font-size: 11pt;
-            font-weight: bold;
-            font-family: Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 800;
             text-align: center;
             white-space: nowrap;
-            letter-spacing: 0.5px;
+            margin-top: 8px;
+            font-family: Arial, sans-serif;
         }
 
-        /* Bloco Direito: Textos grandes e linhas esticadas até a borda direita */
+        /* Bloco de Dados: Expandido, com texto forte e linhas longas */
         .fields-container {
-            font-size: 14pt; /* Letra maior conforme a foto de referência */
-            line-height: 2.3; /* Espaçamento amplo para escrita confortável */
-            width: 47mm;
+            width: 390px;
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-around; /* Distribui Data, Local e Recebido perfeitamente de ponta a ponta */
             box-sizing: border-box;
-            padding-left: 1mm;
+            padding-left: 5px;
         }
 
         .field-item {
+            font-size: 20px; /* Fonte robusta igual à sua foto de referência */
+            font-weight: bold;
+            color: #000;
             white-space: nowrap;
+            display: flex;
+            align-items: flex-end;
         }
 
-        /* Configurações Estritas de Impressão Térmica */
+        /* Linha contínua simulada por borda inferior CSS (nunca quebra ou encavala) */
+        .line-fill {
+            flex-grow: 1;
+            border-bottom: 2px solid #000;
+            margin-left: 6px;
+            margin-bottom: 4px;
+        }
+
+        /* REGRAS CRÍTICAS DE INJEÇÃO NO SPOOLER DE IMPRESSÃO */
         @media print {
             @page {
-                size: 84.9mm 35.6mm;
+                size: 84.9mm 35.6mm; /* Informa o tamanho do rolo ao driver */
                 margin: 0 !important;
             }
             html, body {
                 margin: 0 !important;
                 padding: 0 !important;
-                width: 84.9mm;
-                height: 35.6mm;
                 background: white;
+                width: 100%;
             }
             .config-panel {
                 display: none !important;
             }
-            #print-area {
-                display: block !important;
-                width: 84.9mm;
-            }
             .zebra-label {
                 border: none !important;
                 margin: 0 !important;
-                padding: 1.5mm 2.5mm !important;
-                width: 84.9mm !important;
-                height: 35.6mm !important;
-                max-height: 35.6mm !important;
+                box-shadow: none !important;
+                /* Força o motor do navegador a esticar os pixels na área total do rolo */
+                width: 100vw !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
                 page-break-after: always !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-                overflow: hidden !important;
+                break-after: page !important;
             }
         }
     </style>
@@ -188,7 +192,6 @@
     <div id="print-area"></div>
 
     <script {nonce}>
-        // Memória ativa para carregar o sequencial correto automaticamente
         window.onload = function() {
             const savedLastNum = localStorage.getItem('lastPrintedNumber');
             if (savedLastNum) {
@@ -220,21 +223,22 @@
                         <div class="label-code-text">${fullCode}</div>
                     </div>
                     <div class="fields-container">
-                        <div class="field-item"><strong>Data:</strong> _______________</div>
-                        <div class="field-item"><strong>Local:</strong> ______________</div>
-                        <div class="field-item"><strong>Recebido:</strong> ___________</div>
+                        <div class="field-item">Data:<div class="line-fill"></div></div>
+                        <div class="field-item">Local:<div class="line-fill"></div></div>
+                        <div class="field-item">Recebido:<div class="line-fill"></div></div>
                     </div>
                 `;
 
                 printArea.appendChild(label);
 
+                // Injeta o QR Code em tamanho maximizado
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 115,
-                    height: 115,
+                    width: 165,
+                    height: 165,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
+                    correctLevel : QRCode.CorrectLevel.M
                 });
             }
 
