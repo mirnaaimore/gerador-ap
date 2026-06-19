@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Etiquetas - Achados e Perdidos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        /* Configurações visuais do painel de controle */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .config-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 0 auto 30px auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #cc0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #aa0000;
+        }
+
+        /* Área de visualização das etiquetas */
+        #print-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Configuração de tamanho exato para a Impressora Zebra (100mm x 60mm) */
+        .zebra-label {
+            width: 100mm;
+            height: 60mm;
+            background: white;
+            border: 1px dashed #ccc; /* Linha pontilhada apenas para visualização na tela */
+            padding: 6mm 8mm;
+            box-sizing: border-box;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .label-header {
+            font-size: 16pt;
+            font-weight: bold;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .label-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+        }
+
+        .fields {
+            font-size: 11pt;
+            line-height: 2.2;
+            width: 65%;
+        }
+
+        .qrcode-box {
+            width: 90px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* REGRAS CRÍTICAS PARA A HORA DE IMPRIMIR */
+        @media print {
+            body {
+                margin: 0;
+                background: white;
+            }
+            .config-panel {
+                display: none; /* Esconde o painel de configuração na impressão */
+            }
+            .zebra-label {
+                border: none; /* Remove bordas para não saírem na etiqueta térmica */
+                margin: 0;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="config-panel">
+        <h2 style="text-align: center; margin-top: 0; color: #cc0000;">Configurador de Etiquetas</h2>
+        
+        <div class="form-group">
+            <label>Prefixo do Código:</label>
+            <input type="text" id="prefix" value="2026-FLA">
+        </div>
+        
+        <div class="form-group" style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label>Número Inicial:</label>
+                <input type="number" id="start-num" value="1">
+            </div>
+            <div style="flex: 1;">
+                <label>Número Final:</label>
+                <input type="number" id="end-num" value="50">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Dígitos do Sequencial (ex: 4 para 0001):</label>
+            <input type="number" id="padding" value="4">
+        </div>
+
+        <button onclick="generateLabels()">Gerar e Abrir Impressão</button>
+    </div>
+
+    <div id="print-area"></div>
+
+    <script>
+        function generateLabels() {
+            const prefix = document.getElementById('prefix').value;
+            const startNum = parseInt(document.getElementById('start-num').value);
+            const endNum = parseInt(document.getElementById('end-num').value);
+            const padding = parseInt(document.getElementById('padding').value);
+            const printArea = document.getElementById('print-area');
+            
+            // Limpa a área de impressão anterior
+            printArea.innerHTML = '';
+
+            // Laço para construir cada etiqueta no intervalo desejado
+            for (let i = startNum; i <= endNum; i++) {
+                // Formata o número com zeros à esquerda (ex: 1 vira 0001)
+                const numString = String(i).padStart(padding, '0');
+                const fullCode = `${prefix}${numString}`;
+
+                // Cria o elemento da etiqueta Zebra
+                const label = document.createElement('div');
+                label.className = 'zebra-label';
+                
+                label.innerHTML = `
+                    <div class="label-header">${fullCode}</div>
+                    <div class="label-body">
+                        <div class="fields">
+                            <strong>Local:</strong> ______________________<br>
+                            <strong>Recebido:</strong> ____________________<br>
+                            <strong>Data:</strong> _______________________
+                        </div>
+                        <div class="qrcode-box" id="qr-${i}"></div>
+                    </div>
+                `;
+
+                printArea.appendChild(label);
+
+                // Renderiza o QR Code gráfico real dentro do elemento gerado
+                new QRCode(document.getElementById(`qr-${i}`), {
+                    text: fullCode,
+                    width: 90,
+                    height: 90,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            }
+
+            // Abre a janela de impressão nativa do sistema automaticamente após gerar
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+    </script>
+</body>
+</html>
