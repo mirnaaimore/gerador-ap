@@ -63,41 +63,33 @@
             max-height: 32mm;
             background: white;
             border: 1px dashed #ccc; /* Apenas referência na tela */
-            padding: 1mm 2mm;
+            padding: 2mm 3mm;
             box-sizing: border-box;
             margin-bottom: 15px;
             overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
             page-break-after: always !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
-        /* Tabela estrutural interna para blindar o layout */
-        .label-table {
-            width: 100%;
+        /* Bloco Esquerdo: QR Code + Texto Código */
+        .left-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 26mm;
             height: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-
-        .col-left {
-            width: 28mm; /* Espaço do QR Code */
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .col-right {
-            width: 50mm; /* Espaço dos textos */
-            vertical-align: middle;
-            padding-left: 1mm;
-            box-sizing: border-box;
         }
 
         .qrcode-box {
             width: 70px;
             height: 70px;
-            margin: 0 auto 1mm auto;
-            display: block;
+            margin-bottom: 1mm;
         }
 
         .label-code-text {
@@ -107,14 +99,16 @@
             white-space: nowrap;
         }
 
-        /* Configuração otimizada para criar o máximo de espaço vertical livre */
+        /* Bloco Direito Forçado: Altura cravada com distribuição automática nas extremidades */
         .fields-container {
-            font-size: 9.5pt; /* Reduzido ligeiramente para dar mais teto livre */
-            line-height: 2.6; /* Aumentado drasticamente para afastar as linhas */
-            height: 100%;
+            font-size: 9.5pt;
+            width: 48mm;
+            height: 26mm; /* Trava a altura do bloco de texto para esticar o espaço */
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Distribui as três linhas coladas nas bordas superior/inferior */
+            justify-content: space-between; /* Empurra os itens para o topo, meio e fundo obrigatoriamente */
+            box-sizing: border-box;
+            padding-left: 1mm;
         }
 
         .field-item {
@@ -144,7 +138,7 @@
             .zebra-label {
                 border: none !important;
                 margin: 0 !important;
-                padding: 1mm 2mm !important;
+                padding: 2mm 3mm !important;
                 width: 82mm !important;
                 height: 32mm !important;
                 max-height: 32mm !important;
@@ -205,21 +199,15 @@
                 label.className = 'zebra-label';
                 
                 label.innerHTML = `
-                    <table class="label-table">
-                        <tr>
-                            <td class="col-left">
-                                <div class="qrcode-box" id="qr-${i}"></div>
-                                <div class="label-code-text">${fullCode}</div>
-                            </td>
-                            <td class="col-right">
-                                <div class="fields-container">
-                                    <div class="field-item"><strong>Data:</strong> ___________</div>
-                                    <div class="field-item"><strong>Local:</strong> __________</div>
-                                    <div class="field-item"><strong>Recebido:</strong> _______</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="left-block">
+                        <div class="qrcode-box" id="qr-${i}"></div>
+                        <div class="label-code-text">${fullCode}</div>
+                    </div>
+                    <div class="fields-container">
+                        <div class="field-item"><strong>Data:</strong> ___________</div>
+                        <div class="field-item"><strong>Local:</strong> __________</div>
+                        <div class="field-item"><strong>Recebido:</strong> _______</div>
+                    </div>
                 `;
 
                 printArea.appendChild(label);
