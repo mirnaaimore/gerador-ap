@@ -5,7 +5,7 @@
     <title>Gerador de Etiquetas - Achados e Perdidos</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        /* Configurações visuais do painel de controle */
+        /* Configurações visuais do painel de controle na tela */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -57,26 +57,27 @@
             align-items: center;
         }
 
-        /* Configuração exata e travada para a Impressora Zebra (100mm x 50mm) */
+        /* Configuração de segurança rígida para o tamanho físico 100mm x 50mm */
         .zebra-label {
             width: 100mm;
             height: 50mm;
-            max-height: 50mm; /* Força o limite rígido de altura */
+            max-height: 50mm;
             background: white;
-            border: 1px dashed #ccc; /* Borda pontilhada apenas para tela */
-            padding: 4mm 5mm;
+            border: 1px dashed #ccc; /* Linha visível apenas no monitor */
+            padding: 3mm 5mm;
             box-sizing: border-box;
-            page-break-after: always;
-            page-break-inside: avoid;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
             overflow: hidden;
+            page-break-after: always !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
 
-        /* Bloco Esquerdo: QR Code + Código abaixo */
+        /* Bloco Esquerdo: QR Code + Código */
         .left-block {
             display: flex;
             flex-direction: column;
@@ -87,16 +88,16 @@
         }
 
         .qrcode-box {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 1.5mm;
+            margin-bottom: 1mm;
         }
 
         .label-code-text {
-            font-size: 11pt;
+            font-size: 10pt;
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
             text-align: center;
@@ -105,8 +106,8 @@
 
         /* Bloco Direito: Linhas verticais */
         .fields-block {
-            font-size: 11pt;
-            line-height: 2.1;
+            font-size: 10.5pt;
+            line-height: 2.0;
             width: 53mm;
             height: 100%;
             display: flex;
@@ -118,11 +119,11 @@
             white-space: nowrap;
         }
 
-        /* REGRAS CRÍTICAS DE IMPRESSÃO (REMOVE QUEBRAS DO NAVEGADOR) */
+        /* CONFIGURAÇÃO EXTREMA PARA IMPRESSÃO TÉRMICA */
         @media print {
             @page {
                 size: 100mm 50mm;
-                margin: 0 !important; /* Ignora as margens padrões do navegador */
+                margin: 0 !important;
             }
             html, body {
                 margin: 0 !important;
@@ -132,14 +133,23 @@
                 background: white;
             }
             .config-panel {
-                display: none;
+                display: none !important;
+            }
+            #print-area {
+                display: block !important;
+                width: 100mm;
             }
             .zebra-label {
-                border: none;
+                border: none !important;
                 margin: 0 !important;
-                padding: 4mm 5mm !important;
+                padding: 3mm 5mm !important;
+                width: 100mm !important;
+                height: 50mm !important;
+                max-height: 50mm !important;
                 page-break-after: always !important;
-                clear: both;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                overflow: hidden !important;
             }
         }
     </style>
@@ -166,7 +176,7 @@
         </div>
 
         <div class="form-group">
-            <label>Dígitos do Sequencial (ex: 4 para 0001):</label>
+            <label>Dígitos do Sequencial:</label>
             <input type="number" id="padding" value="4">
         </div>
 
@@ -175,7 +185,7 @@
 
     <div id="print-area"></div>
 
-    <script>
+    <script {nonce}>
         function generateLabels() {
             const prefix = document.getElementById('prefix').value;
             const startNum = parseInt(document.getElementById('start-num').value);
@@ -208,8 +218,8 @@
 
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 75,
-                    height: 75,
+                    width: 70,
+                    height: 70,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
