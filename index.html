@@ -89,7 +89,7 @@
         .col-right {
             width: 50mm; /* Espaço dos textos */
             vertical-align: middle;
-            padding-left: 1mm; /* TEXTO PUXADO PARA A ESQUERDA: reduzido de 4mm para 1mm */
+            padding-left: 1mm;
             box-sizing: border-box;
         }
 
@@ -107,14 +107,20 @@
             white-space: nowrap;
         }
 
-        /* Configuração das linhas de texto */
+        /* Configuração das linhas de texto com mais espaço */
         .fields-container {
             font-size: 10.5pt;
-            line-height: 1.8;
+            line-height: 2.3; /* Aumentado o espaçamento entre as linhas */
         }
 
         .field-item {
             white-space: nowrap;
+            margin-bottom: 2mm; /* Margem extra para criar mais separação vertical */
+        }
+        
+        /* Remove a margem do último item para não estourar o fundo */
+        .field-item:last-child {
+            margin-bottom: 0;
         }
 
         /* Configurações de Impressão Térmica */
