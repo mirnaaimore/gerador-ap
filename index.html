@@ -56,13 +56,13 @@
             align-items: center;
         }
 
-        /* Área total da etiqueta travada na proporção ideal */
+        /* ÁREA DA ETIQUETA CORRIGIDA: Forçando 100mm x 50mm */
         .zebra-label {
-            width: 640px;
-            height: 270px;
+            width: 100mm;
+            height: 50mm;
             background: white;
-            border: 1px dashed #bbb; /* Apenas referência visual na tela */
-            padding: 10px 25px 10px 15px;
+            border: 1px dashed #bbb; /* Referência visual na tela */
+            padding: 5mm 8mm 5mm 5mm; /* Margens internas seguras */
             box-sizing: border-box;
             display: flex;
             flex-direction: row;
@@ -74,48 +74,50 @@
             break-inside: avoid !important;
         }
 
-        /* Bloco Esquerdo: QR Code + Texto sem negrito para não borrar */
+        /* Bloco Esquerdo: QR Code + Texto */
         .left-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 180px;
+            width: 35mm; /* Proporcional ao novo tamanho */
             height: 100%;
         }
 
         .qrcode-box {
-            width: 165px;
-            height: 165px;
+            width: 32mm;
+            height: 32mm;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .label-code-text {
-            font-size: 14px;
-            font-weight: normal; /* REMOVIDO O NEGRITO: Evita o acúmulo de calor e borrão */
+            font-size: 12pt;
+            font-weight: normal;
             text-align: center;
             white-space: nowrap;
-            margin-top: 8px;
+            margin-top: 2mm;
             font-family: Arial, sans-serif;
-            letter-spacing: 1px; /* Espaçamento leve para dar mais nitidez */
+            letter-spacing: 0.5px;
             color: #000;
         }
 
-        /* Bloco Direito Otimizado: Ocupa todo o resto da etiqueta */
+        /* Bloco Direito Otimizado */
         .fields-container {
             flex-grow: 1;
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            justify-content: space-between; /* Distribui os campos verticalmente */
             box-sizing: border-box;
-            padding-left: 15px;
+            padding-left: 5mm;
+            padding-top: 2mm;
+            padding-bottom: 2mm;
         }
 
         .field-item {
-            font-size: 21px;
+            font-size: 16pt; /* Aumentado para melhor leitura no tamanho 100x50 */
             font-weight: bold;
             color: #000;
             white-space: nowrap;
@@ -129,20 +131,21 @@
             flex-grow: 1;
             border-bottom: 2px solid #000;
             margin-left: 8px;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
-        /* Injeção Direta no Spooler da Zebra */
+        /* CORREÇÃO DO SPOOLER DE IMPRESSÃO ZEBRA */
         @media print {
             @page {
-                size: 84.9mm 35.6mm;
+                size: 100mm 50mm; /* Tamanho exato da sua etiqueta física */
                 margin: 0 !important;
             }
             html, body {
                 margin: 0 !important;
                 padding: 0 !important;
                 background: white;
-                width: 100%;
+                width: 100mm;
+                height: 50mm;
             }
             .config-panel {
                 display: none !important;
@@ -151,9 +154,8 @@
                 border: none !important;
                 margin: 0 !important;
                 box-shadow: none !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                max-height: 100vh !important;
+                width: 100mm !important;
+                height: 50mm !important;
                 page-break-after: always !important;
             }
         }
@@ -190,7 +192,7 @@
 
     <div id="print-area"></div>
 
-    <script {nonce}>
+    <script>
         window.onload = function() {
             const savedLastNum = localStorage.getItem('lastPrintedNumber');
             if (savedLastNum) {
@@ -208,6 +210,9 @@
             const printArea = document.getElementById('print-area');
             
             printArea.innerHTML = '';
+
+            // Conversão aproximada de 32mm para pixels para o gerador de QR Code (~120px)
+            const qrSizeInPx = 120;
 
             for (let i = startNum; i <= endNum; i++) {
                 const numString = String(i).padStart(padding, '0');
@@ -232,8 +237,8 @@
 
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 165,
-                    height: 165,
+                    width: qrSizeInPx,
+                    height: qrSizeInPx,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.M
