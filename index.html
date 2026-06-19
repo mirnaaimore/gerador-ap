@@ -90,21 +90,20 @@ button{
     font-weight:bold;
 }
 
-/* ETIQUETA CORRIGIDA E REDUZIDA PARA 84.9mm x 35.6mm */
-
+/* ÁREA DA ETIQUETA COM MÁXIMA SEGURANÇA CONTRA EMBARALHAMENTO */
 .zebra{
     width: 84.9mm;
     height: 35.6mm;
     max-height: 35.6mm;
     display:flex;
-    padding:2mm;
-    border:1px dashed #ccc;
+    padding: 3mm 2mm 3mm 3mm; /* Ajuste fino de margens internas */
     background:#fff;
+    border:1px dashed #ccc; /* Apenas referência na tela */
     overflow: hidden;
 }
 
 .left{
-    width:24mm; /* Reduzido em 20% para não esmagar as linhas */
+    width: 20mm; /* Reduzido drasticamente para isolar o QR Code */
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -112,67 +111,67 @@ button{
 }
 
 .qr{
-    width:22mm;
-    height:22mm;
+    width: 65px; /* QR Code ultra compacto para não invadir o texto */
+    height: 65px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .code{
-    font-size:9px;
-    margin-top:1mm;
-    font-weight:normal; /* Sem negrito para evitar borrões na impressão térmica */
+    font-size:8px; /* Texto menor para nitidez térmica */
+    margin-top:2mm;
+    font-weight:normal; /* Sem negrito para evitar borrões */
     text-align:center;
-    letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
 .right{
     flex:1;
-    padding-left:3mm;
+    padding-left: 5mm; /* Corredor de vento expandido para afastar o texto */
     display:flex;
     flex-direction:column;
-    justify-content:space-evenly;
+    justify-content:space-between; /* Distribuição vertical perfeita */
 }
 
 .field{
     display:flex;
     align-items:flex-end;
-    font-size:4.2mm; /* Proporção reduzida */
+    font-size:3.8mm; /* Tamanho de letra seguro para não encavalar */
     font-weight:bold;
+    color: #000;
 }
 
 .line{
     flex:1;
     border-bottom:1px solid #000;
     margin-left:2mm;
-    margin-bottom:1mm;
+    margin-bottom:0.5mm;
 }
 
 /* PRINT */
-
-@media print {
-    @page {
-        size: 84.9mm 35.6mm; /* Tamanho físico real enviado ao driver da Zebra */
-        margin: 0 !important;
+@media print{
+    @page{
+        size: 84.9mm 35.6mm;
+        margin:0 !important;
     }
 
-    body {
+    body{
         background:#fff;
         padding:0;
     }
 
-    .container {
+    .container{
         display:none;
     }
 
-    #printArea {
+    #printArea{
         display:block;
     }
 
-    .zebra {
+    .zebra{
         border:none;
-        margin: 0 !important;
+        margin:0 !important;
         page-break-after:always !important;
         break-after: page !important;
     }
@@ -187,39 +186,34 @@ button{
 <body>
 
 <div class="container">
+    <div class="card">
+        <h1>Gerador de Etiquetas A&P</h1>
 
-<div class="card">
+        <label>Prefixo</label>
+        <input id="prefix" value="2026-FLA">
 
-<h1>Gerador de Etiquetas A&P</h1>
+        <div class="row">
+            <div>
+                <label>Inicial</label>
+                <input type="number" id="start" value="1">
+            </div>
+            <div>
+                <label>Quantidade</label>
+                <input type="number" id="qty" value="100">
+            </div>
+        </div>
 
-<label>Prefixo</label>
-<input id="prefix" value="2026-FLA">
+        <button class="btn" onclick="generate()">GERAR E IMPRIMIR</button>
+        <button class="btn-reset" onclick="reset()">ZERAR SEQUÊNCIA</button>
 
-<div class="row">
-<div>
-<label>Inicial</label>
-<input type="number" id="start" value="1">
-</div>
-
-<div>
-<label>Quantidade</label>
-<input type="number" id="qty" value="100">
-</div>
-</div>
-
-<button class="btn" onclick="generate()">GERAR E IMPRIMIR</button>
-<button class="btn-reset" onclick="reset()">ZERAR SEQUÊNCIA</button>
-
-<div class="preview">Pré-visualização</div>
-<div id="preview"></div>
-
-</div>
+        <div class="preview">Pré-visualização</div>
+        <div id="preview"></div>
+    </div>
 </div>
 
 <div id="printArea"></div>
 
 <script>
-
 function pad(num){
     return String(num).padStart(5,'0');
 }
@@ -243,16 +237,14 @@ function makeLabel(code,id){
 function preview(){
     const prefix = document.getElementById("prefix").value;
     const start = parseInt(document.getElementById("start").value);
-
     const code = prefix + pad(start);
 
-    document.getElementById("preview").innerHTML =
-        makeLabel(code,"prevqr");
+    document.getElementById("preview").innerHTML = makeLabel(code,"prevqr");
 
     new QRCode(document.getElementById("prevqr"),{
         text:code,
-        width:85, /* QR Code escalonado para 20% menor (85px) */
-        height:85,
+        width:65,
+        height:65,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.M
@@ -260,36 +252,28 @@ function preview(){
 }
 
 function generate(){
-
     const prefix = document.getElementById("prefix").value;
     const start = parseInt(document.getElementById("start").value);
     const qty = parseInt(document.getElementById("qty").value);
-
     const area = document.getElementById("printArea");
+    
     area.innerHTML = "";
-
     let current = start;
 
     for(let i=0;i<qty;i++){
-
         const code = prefix + pad(current);
         const id = "qr"+current;
-
         area.innerHTML += makeLabel(code,id);
-
         current++;
     }
 
     setTimeout(()=>{
-
         for(let i=start;i<start+qty;i++){
-
             const code = document.getElementById("prefix").value + pad(i);
-
             new QRCode(document.getElementById("qr"+i),{
                 text:code,
-                width:85, /* QR Code de impressão calibrado para 85px */
-                height:85,
+                width:65,
+                height:65,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.M
@@ -297,9 +281,7 @@ function generate(){
         }
 
         localStorage.setItem("last", start+qty);
-
         window.print();
-
     },300);
 }
 
@@ -310,7 +292,6 @@ function reset(){
     }
 }
 
-// Inicializador da memória sequencial automática
 window.onload = function() {
     const saved = localStorage.getItem("last");
     if(saved) {
@@ -322,7 +303,6 @@ document.getElementById("prefix").oninput = preview;
 document.getElementById("start").oninput = preview;
 
 preview();
-
 </script>
 
 </body>
