@@ -107,20 +107,18 @@
             white-space: nowrap;
         }
 
-        /* Configuração das linhas de texto com mais espaço */
+        /* Configuração otimizada para criar o máximo de espaço vertical livre */
         .fields-container {
-            font-size: 10.5pt;
-            line-height: 2.3; /* Aumentado o espaçamento entre as linhas */
+            font-size: 9.5pt; /* Reduzido ligeiramente para dar mais teto livre */
+            line-height: 2.6; /* Aumentado drasticamente para afastar as linhas */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Distribui as três linhas coladas nas bordas superior/inferior */
         }
 
         .field-item {
             white-space: nowrap;
-            margin-bottom: 2mm; /* Margem extra para criar mais separação vertical */
-        }
-        
-        /* Remove a margem do último item para não estourar o fundo */
-        .field-item:last-child {
-            margin-bottom: 0;
         }
 
         /* Configurações de Impressão Térmica */
