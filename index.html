@@ -57,14 +57,14 @@
             align-items: center;
         }
 
-        /* Configuração de segurança rígida para o tamanho físico 100mm x 50mm */
+        /* Configuração de tamanho físico 100mm x 50mm */
         .zebra-label {
             width: 100mm;
             height: 50mm;
             max-height: 50mm;
             background: white;
             border: 1px dashed #ccc; /* Linha visível apenas no monitor */
-            padding: 3mm 5mm;
+            padding: 4mm 5mm;
             box-sizing: border-box;
             display: flex;
             flex-direction: row;
@@ -77,38 +77,38 @@
             break-inside: avoid !important;
         }
 
-        /* Bloco Esquerdo: QR Code + Código */
+        /* Bloco Esquerdo Expandido: QR Code Maior + Código */
         .left-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 32mm;
+            width: 38mm; /* Aumentado para acomodar o QR Code maior */
             height: 100%;
         }
 
         .qrcode-box {
-            width: 70px;
-            height: 70px;
+            width: 110px; /* Tamanho do QR Code aumentado */
+            height: 110px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 1mm;
+            margin-bottom: 2mm;
         }
 
         .label-code-text {
-            font-size: 10pt;
+            font-size: 11pt;
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
             text-align: center;
             white-space: nowrap;
         }
 
-        /* Bloco Direito: Linhas verticais */
+        /* Bloco Direito: Linhas verticais ajustadas */
         .fields-block {
-            font-size: 10.5pt;
-            line-height: 2.0;
-            width: 53mm;
+            font-size: 11pt;
+            line-height: 2.2;
+            width: 48mm;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -119,7 +119,7 @@
             white-space: nowrap;
         }
 
-        /* CONFIGURAÇÃO EXTREMA PARA IMPRESSÃO TÉRMICA */
+        /* CONFIGURAÇÃO PARA IMPRESSÃO TÉRMICA */
         @media print {
             @page {
                 size: 100mm 50mm;
@@ -142,7 +142,7 @@
             .zebra-label {
                 border: none !important;
                 margin: 0 !important;
-                padding: 3mm 5mm !important;
+                padding: 4mm 5mm !important;
                 width: 100mm !important;
                 height: 50mm !important;
                 max-height: 50mm !important;
@@ -208,18 +208,19 @@
                         <div class="label-code-text">${fullCode}</div>
                     </div>
                     <div class="fields-block">
-                        <div class="field-item"><strong>Data:</strong> _____________________</div>
-                        <div class="field-item"><strong>Local:</strong> ____________________</div>
-                        <div class="field-item"><strong>Recebido:</strong> _________________</div>
+                        <div class="field-item"><strong>Data:</strong> _________________</div>
+                        <div class="field-item"><strong>Local:</strong> ________________</div>
+                        <div class="field-item"><strong>Recebido:</strong> _____________</div>
                     </div>
                 `;
 
                 printArea.appendChild(label);
 
+                // Gerador com tamanho 110x110 para nitidez máxima na Zebra
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 70,
-                    height: 70,
+                    width: 110,
+                    height: 110,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
