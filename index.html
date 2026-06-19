@@ -56,57 +56,63 @@
             align-items: center;
         }
 
-        /* Limite físico rígido: 82mm x 32mm */
+        /* CONFIGURAÇÃO EXPANDIDA PARA OCUPAR TODA A ETIQUETA FÍSICA */
         .zebra-label {
-            width: 82mm;
-            height: 32mm;
-            max-height: 32mm;
+            width: 84.9mm;
+            height: 35.6mm;
+            max-height: 35.6mm;
             background: white;
-            border: 1px dashed #ccc; /* Apenas referência na tela */
-            padding: 2mm 3mm;
+            border: 1px dashed #ccc; /* Linha de referência na tela */
+            padding: 1.5mm 2.5mm; /* Margens mínimas para colar nas bordas físicas */
             box-sizing: border-box;
-            margin-bottom: 15px;
-            overflow: hidden;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 15px;
+            overflow: hidden;
             page-break-after: always !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
-        /* Bloco Esquerdo: QR Code + Texto Código */
+        /* Bloco Esquerdo: QR Code Robusto + Código Legível */
         .left-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 26mm;
+            width: 32mm;
             height: 100%;
         }
 
         .qrcode-box {
-            width: 70px;
-            height: 70px;
+            width: 115px; /* Tamanho ampliado para preencher a altura da etiqueta */
+            height: 115px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 1mm;
         }
 
         .label-code-text {
-            font-size: 9pt;
+            font-size: 11pt;
             font-weight: bold;
-            font-family: 'Arial Black', sans-serif;
+            font-family: Arial, sans-serif;
+            text-align: center;
             white-space: nowrap;
+            letter-spacing: 0.5px;
         }
 
-        /* Bloco Direito Forçado: Altura cravada com distribuição automática nas extremidades */
+        /* Bloco Direito: Textos grandes e linhas esticadas até a borda direita */
         .fields-container {
-            font-size: 9.5pt;
-            width: 48mm;
-            height: 26mm; /* Trava a altura do bloco de texto para esticar o espaço */
+            font-size: 14pt; /* Letra maior conforme a foto de referência */
+            line-height: 2.3; /* Espaçamento amplo para escrita confortável */
+            width: 47mm;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Empurra os itens para o topo, meio e fundo obrigatoriamente */
+            justify-content: center;
             box-sizing: border-box;
             padding-left: 1mm;
         }
@@ -115,7 +121,7 @@
             white-space: nowrap;
         }
 
-        /* Configurações de Impressão Térmica */
+        /* Configurações Estritas de Impressão Térmica */
         @media print {
             @page {
                 size: 84.9mm 35.6mm;
@@ -138,10 +144,10 @@
             .zebra-label {
                 border: none !important;
                 margin: 0 !important;
-                padding: 2mm 3mm !important;
-                width: 82mm !important;
-                height: 32mm !important;
-                max-height: 32mm !important;
+                padding: 1.5mm 2.5mm !important;
+                width: 84.9mm !important;
+                height: 35.6mm !important;
+                max-height: 35.6mm !important;
                 page-break-after: always !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
@@ -182,6 +188,16 @@
     <div id="print-area"></div>
 
     <script {nonce}>
+        // Memória ativa para carregar o sequencial correto automaticamente
+        window.onload = function() {
+            const savedLastNum = localStorage.getItem('lastPrintedNumber');
+            if (savedLastNum) {
+                const nextStart = parseInt(savedLastNum) + 1;
+                document.getElementById('start-num').value = nextStart;
+                document.getElementById('end-num').value = nextStart + 49;
+            }
+        };
+
         function generateLabels() {
             const prefix = document.getElementById('prefix').value;
             const startNum = parseInt(document.getElementById('start-num').value);
@@ -204,9 +220,9 @@
                         <div class="label-code-text">${fullCode}</div>
                     </div>
                     <div class="fields-container">
-                        <div class="field-item"><strong>Data:</strong> ___________</div>
-                        <div class="field-item"><strong>Local:</strong> __________</div>
-                        <div class="field-item"><strong>Recebido:</strong> _______</div>
+                        <div class="field-item"><strong>Data:</strong> _______________</div>
+                        <div class="field-item"><strong>Local:</strong> ______________</div>
+                        <div class="field-item"><strong>Recebido:</strong> ___________</div>
                     </div>
                 `;
 
@@ -214,13 +230,15 @@
 
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 70,
-                    height: 70,
+                    width: 115,
+                    height: 115,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
                 });
             }
+
+            localStorage.setItem('lastPrintedNumber', endNum);
 
             setTimeout(() => {
                 window.print();
