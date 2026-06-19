@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador de Etiquetas - Achados e Perdidos</title>
+    <title>Etiquetas A&P</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        /* Configurações visuais do painel de controle na tela */
+        /* Configurações do painel na tela */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -50,25 +50,24 @@
             background-color: #aa0000;
         }
 
-        /* Área de visualização das etiquetas */
         #print-area {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Dimensões levemente reduzidas para criar zona de segurança anti-encavalamento */
+        /* Limite físico estrito: 82mm x 32mm para evitar encavalamento */
         .zebra-label {
             width: 82mm;
             height: 32mm;
             max-height: 32mm;
             background: white;
-            border: 1px dashed #ccc; /* Linha de referência na tela */
-            padding: 2mm 3mm;
+            border: 1px dashed #ccc; /* Apenas referência em tela */
+            padding: 2mm 4mm;
             box-sizing: border-box;
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: space-between; /* Força QR na esquerda e texto na direita */
             align-items: center;
             margin-bottom: 15px;
             overflow: hidden;
@@ -77,38 +76,38 @@
             break-inside: avoid !important;
         }
 
-        /* Bloco Esquerdo: QR Code + Código ajustados */
+        /* Bloco Esquerdo: QR Code menor e afastado para a ponta esquerda */
         .left-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 26mm;
+            width: 25mm;
             height: 100%;
         }
 
         .qrcode-box {
-            width: 85px; /* Reduzido levemente para segurança */
-            height: 85px;
+            width: 75px; /* Reduzido para dar espaço ao texto */
+            height: 75px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 1mm;
+            margin-bottom: 1.5mm;
         }
 
         .label-code-text {
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
             text-align: center;
             white-space: nowrap;
         }
 
-        /* Bloco Direito: Compactado para não encavalar verticalmente */
+        /* Bloco Direito: Linhas curtas e com ótimo espaço vertical para não embolar */
         .fields-block {
             font-size: 10.5pt;
-            line-height: 1.7; /* Mais compacto para garantir que caiba na altura */
-            width: 45mm;
+            line-height: 1.8; /* Espaçamento vertical amplo */
+            width: 42mm; /* Largura controlada para manter distância do QR Code */
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -120,10 +119,10 @@
             width: 100%;
         }
 
-        /* CONFIGURAÇÃO SEVERA PARA IMPRESSÃO TÉRMICA */
+        /* Configurações de Impressão Térmica */
         @media print {
             @page {
-                size: 84.9mm 35.6mm; /* O driver continua lendo o papel total */
+                size: 84.9mm 35.6mm;
                 margin: 0 !important;
             }
             html, body {
@@ -143,7 +142,7 @@
             .zebra-label {
                 border: none !important;
                 margin: 0 !important;
-                padding: 2mm 3mm !important;
+                padding: 2mm 4mm !important;
                 width: 82mm !important;
                 height: 32mm !important;
                 max-height: 32mm !important;
@@ -209,9 +208,9 @@
                         <div class="label-code-text">${fullCode}</div>
                     </div>
                     <div class="fields-block">
-                        <div class="field-item"><strong>Data:</strong> _______________</div>
-                        <div class="field-item"><strong>Local:</strong> ______________</div>
-                        <div class="field-item"><strong>Recebido:</strong> ___________</div>
+                        <div class="field-item"><strong>Data:</strong> ______________</div>
+                        <div class="field-item"><strong>Local:</strong> _____________</div>
+                        <div class="field-item"><strong>Recebido:</strong> __________</div>
                     </div>
                 `;
 
@@ -219,8 +218,8 @@
 
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 85,
-                    height: 85,
+                    width: 75,
+                    height: 75,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
