@@ -56,19 +56,15 @@
             align-items: center;
         }
 
-        /* Limite físico estrito: 82mm x 32mm para evitar encavalamento */
+        /* Limite físico rígido: 82mm x 32mm */
         .zebra-label {
             width: 82mm;
             height: 32mm;
             max-height: 32mm;
             background: white;
-            border: 1px dashed #ccc; /* Apenas referência em tela */
-            padding: 2mm 4mm;
+            border: 1px dashed #ccc; /* Apenas referência na tela */
+            padding: 1mm 2mm;
             box-sizing: border-box;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between; /* Força QR na esquerda e texto na direita */
-            align-items: center;
             margin-bottom: 15px;
             overflow: hidden;
             page-break-after: always !important;
@@ -76,47 +72,49 @@
             break-inside: avoid !important;
         }
 
-        /* Bloco Esquerdo: QR Code menor e afastado para a ponta esquerda */
-        .left-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 25mm;
+        /* Tabela estrutural interna para blindar o layout */
+        .label-table {
+            width: 100%;
             height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .col-left {
+            width: 28mm; /* Espaço do QR Code */
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .col-right {
+            width: 50mm; /* Espaço dos textos */
+            vertical-align: middle;
+            padding-left: 1mm; /* TEXTO PUXADO PARA A ESQUERDA: reduzido de 4mm para 1mm */
+            box-sizing: border-box;
         }
 
         .qrcode-box {
-            width: 75px; /* Reduzido para dar espaço ao texto */
-            height: 75px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 1.5mm;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1mm auto;
+            display: block;
         }
 
         .label-code-text {
-            font-size: 9.5pt;
+            font-size: 9pt;
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
-            text-align: center;
             white-space: nowrap;
         }
 
-        /* Bloco Direito: Linhas curtas e com ótimo espaço vertical para não embolar */
-        .fields-block {
+        /* Configuração das linhas de texto */
+        .fields-container {
             font-size: 10.5pt;
-            line-height: 1.8; /* Espaçamento vertical amplo */
-            width: 42mm; /* Largura controlada para manter distância do QR Code */
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            line-height: 1.8;
         }
 
         .field-item {
             white-space: nowrap;
-            width: 100%;
         }
 
         /* Configurações de Impressão Térmica */
@@ -142,7 +140,7 @@
             .zebra-label {
                 border: none !important;
                 margin: 0 !important;
-                padding: 2mm 4mm !important;
+                padding: 1mm 2mm !important;
                 width: 82mm !important;
                 height: 32mm !important;
                 max-height: 32mm !important;
@@ -203,23 +201,29 @@
                 label.className = 'zebra-label';
                 
                 label.innerHTML = `
-                    <div class="left-block">
-                        <div class="qrcode-box" id="qr-${i}"></div>
-                        <div class="label-code-text">${fullCode}</div>
-                    </div>
-                    <div class="fields-block">
-                        <div class="field-item"><strong>Data:</strong> ______________</div>
-                        <div class="field-item"><strong>Local:</strong> _____________</div>
-                        <div class="field-item"><strong>Recebido:</strong> __________</div>
-                    </div>
+                    <table class="label-table">
+                        <tr>
+                            <td class="col-left">
+                                <div class="qrcode-box" id="qr-${i}"></div>
+                                <div class="label-code-text">${fullCode}</div>
+                            </td>
+                            <td class="col-right">
+                                <div class="fields-container">
+                                    <div class="field-item"><strong>Data:</strong> ___________</div>
+                                    <div class="field-item"><strong>Local:</strong> __________</div>
+                                    <div class="field-item"><strong>Recebido:</strong> _______</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
                 `;
 
                 printArea.appendChild(label);
 
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 75,
-                    height: 75,
+                    width: 70,
+                    height: 70,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
