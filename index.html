@@ -7,7 +7,7 @@
     <style>
         /* Painel de Controle em Tela */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 20px;
             background-color: #f4f4f9;
             color: #333;
@@ -56,15 +56,13 @@
             align-items: center;
         }
 
-        /* MÁXIMA ESCALA: Travado em pixels de proporção real (proporção de ~2.4)
-           Elimina a interpretação errada de milímetros do navegador.
-        */
+        /* Área total da etiqueta travada na proporção ideal */
         .zebra-label {
             width: 640px;
             height: 270px;
             background: white;
-            border: 1px dashed #bbb; /* Referência em monitor */
-            padding: 10px 15px;
+            border: 1px dashed #bbb; /* Apenas referência visual na tela */
+            padding: 10px 25px 10px 15px;
             box-sizing: border-box;
             display: flex;
             flex-direction: row;
@@ -73,21 +71,21 @@
             margin-bottom: 20px;
             overflow: hidden;
             page-break-after: always !important;
-            break-after: page !important;
+            break-inside: avoid !important;
         }
 
-        /* Container do QR: Ocupa toda a altura disponível da esquerda */
+        /* Bloco Esquerdo: QR Code + Texto sem negrito para não borrar */
         .left-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 200px;
+            width: 180px;
             height: 100%;
         }
 
         .qrcode-box {
-            width: 165px; /* QR Code maximizado */
+            width: 165px;
             height: 165px;
             display: flex;
             justify-content: center;
@@ -95,46 +93,49 @@
         }
 
         .label-code-text {
-            font-size: 15px;
-            font-weight: 800;
+            font-size: 14px;
+            font-weight: normal; /* REMOVIDO O NEGRITO: Evita o acúmulo de calor e borrão */
             text-align: center;
             white-space: nowrap;
             margin-top: 8px;
             font-family: Arial, sans-serif;
+            letter-spacing: 1px; /* Espaçamento leve para dar mais nitidez */
+            color: #000;
         }
 
-        /* Bloco de Dados: Expandido, com texto forte e linhas longas */
+        /* Bloco Direito Otimizado: Ocupa todo o resto da etiqueta */
         .fields-container {
-            width: 390px;
+            flex-grow: 1;
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-around; /* Distribui Data, Local e Recebido perfeitamente de ponta a ponta */
+            justify-content: space-around;
             box-sizing: border-box;
-            padding-left: 5px;
+            padding-left: 15px;
         }
 
         .field-item {
-            font-size: 20px; /* Fonte robusta igual à sua foto de referência */
+            font-size: 21px;
             font-weight: bold;
             color: #000;
             white-space: nowrap;
             display: flex;
             align-items: flex-end;
+            width: 100%;
         }
 
-        /* Linha contínua simulada por borda inferior CSS (nunca quebra ou encavala) */
+        /* Linha automática comprida */
         .line-fill {
             flex-grow: 1;
             border-bottom: 2px solid #000;
-            margin-left: 6px;
-            margin-bottom: 4px;
+            margin-left: 8px;
+            margin-bottom: 3px;
         }
 
-        /* REGRAS CRÍTICAS DE INJEÇÃO NO SPOOLER DE IMPRESSÃO */
+        /* Injeção Direta no Spooler da Zebra */
         @media print {
             @page {
-                size: 84.9mm 35.6mm; /* Informa o tamanho do rolo ao driver */
+                size: 84.9mm 35.6mm;
                 margin: 0 !important;
             }
             html, body {
@@ -150,12 +151,10 @@
                 border: none !important;
                 margin: 0 !important;
                 box-shadow: none !important;
-                /* Força o motor do navegador a esticar os pixels na área total do rolo */
                 width: 100vw !important;
                 height: 100vh !important;
                 max-height: 100vh !important;
                 page-break-after: always !important;
-                break-after: page !important;
             }
         }
     </style>
@@ -231,7 +230,6 @@
 
                 printArea.appendChild(label);
 
-                // Injeta o QR Code em tamanho maximizado
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
                     width: 165,
