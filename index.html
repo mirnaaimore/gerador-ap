@@ -57,59 +57,78 @@
             align-items: center;
         }
 
-        /* Configuração de tamanho exato para a Impressora Zebra (100mm x 60mm) */
+        /* Configuração exata para a Impressora Zebra (100mm x 50mm) */
         .zebra-label {
             width: 100mm;
-            height: 60mm;
+            height: 50mm;
             background: white;
-            border: 1px dashed #ccc; /* Linha pontilhada apenas para visualização na tela */
-            padding: 6mm 8mm;
+            border: 1px dashed #ccc; /* Borda pontilhada apenas para visualização na tela */
+            padding: 5mm 6mm;
             box-sizing: border-box;
             page-break-after: always;
             display: flex;
-            flex-direction: column;
+            flex-direction: row; /* Posiciona o bloco do QR e o bloco dos campos lado a lado */
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
+            overflow: hidden;
         }
 
-        .label-header {
-            font-size: 16pt;
-            font-weight: bold;
-            font-family: 'Arial Black', sans-serif;
-        }
-
-        .label-body {
+        /* Bloco Esquerdo: QR Code + Código por extenso abaixo */
+        .left-block {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            width: 100%;
-        }
-
-        .fields {
-            font-size: 11pt;
-            line-height: 2.2;
-            width: 65%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 35mm;
         }
 
         .qrcode-box {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-bottom: 3mm;
         }
 
-        /* REGRAS CRÍTICAS PARA A HORA DE IMPRIMIR */
+        .label-code-text {
+            font-size: 11pt;
+            font-weight: bold;
+            font-family: 'Arial Black', sans-serif;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* Bloco Direito: Linhas verticais de preenchimento na ordem correta */
+        .fields-block {
+            font-size: 11pt;
+            line-height: 2.3;
+            width: 51mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .field-item {
+            white-space: nowrap;
+        }
+
+        /* REGRAS EXCLUSIVAS PARA A IMPRESSÃO TÉRMICA */
         @media print {
+            @page {
+                size: 100mm 50mm;
+                margin: 0;
+            }
             body {
                 margin: 0;
                 background: white;
             }
             .config-panel {
-                display: none; /* Esconde o painel de configuração na impressão */
+                display: none; /* Esconde as configurações na folha impressa */
             }
             .zebra-label {
-                border: none; /* Remove bordas para não saírem na etiqueta térmica */
+                border: none; /* Remove o pontilhado na impressão */
                 margin: 0;
                 page-break-after: always;
             }
@@ -119,7 +138,7 @@
 <body>
 
     <div class="config-panel">
-        <h2 style="text-align: center; margin-top: 0; color: #cc0000;">Configurador de Etiquetas</h2>
+        <h2 style="text-align: center; margin-top: 0; color: #cc0000;">Configurador de Etiquetas (100x50mm)</h2>
         
         <div class="form-group">
             <label>Prefixo do Código:</label>
@@ -155,45 +174,43 @@
             const padding = parseInt(document.getElementById('padding').value);
             const printArea = document.getElementById('print-area');
             
-            // Limpa a área de impressão anterior
+            // Limpa o histórico da tela
             printArea.innerHTML = '';
 
-            // Laço para construir cada etiqueta no intervalo desejado
+            // Loop para gerar cada etiqueta no intervalo desejado
             for (let i = startNum; i <= endNum; i++) {
-                // Formata o número com zeros à esquerda (ex: 1 vira 0001)
                 const numString = String(i).padStart(padding, '0');
                 const fullCode = `${prefix}${numString}`;
 
-                // Cria o elemento da etiqueta Zebra
                 const label = document.createElement('div');
                 label.className = 'zebra-label';
                 
                 label.innerHTML = `
-                    <div class="label-header">${fullCode}</div>
-                    <div class="label-body">
-                        <div class="fields">
-                            <strong>Local:</strong> ______________________<br>
-                            <strong>Recebido:</strong> ____________________<br>
-                            <strong>Data:</strong> _______________________
-                        </div>
+                    <div class="left-block">
                         <div class="qrcode-box" id="qr-${i}"></div>
+                        <div class="label-code-text">${fullCode}</div>
+                    </div>
+                    <div class="fields-block">
+                        <div class="field-item"><strong>Data:</strong> _____________________</div>
+                        <div class="field-item"><strong>Local:</strong> ____________________</div>
+                        <div class="field-item"><strong>Recebido:</strong> _________________</div>
                     </div>
                 `;
 
                 printArea.appendChild(label);
 
-                // Renderiza o QR Code gráfico real dentro do elemento gerado
+                // Constrói o QR Code de forma nativa na lateral esquerda
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 90,
-                    height: 90,
+                    width: 80,
+                    height: 80,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
                 });
             }
 
-            // Abre a janela de impressão nativa do sistema automaticamente após gerar
+            // Ativa o comando de impressão do navegador automaticamente
             setTimeout(() => {
                 window.print();
             }, 500);
