@@ -90,19 +90,21 @@ button{
     font-weight:bold;
 }
 
-/* ETIQUETA 100x50 REDUZIDA 20% */
+/* ETIQUETA CORRIGIDA E REDUZIDA PARA 84.9mm x 35.6mm */
 
 .zebra{
-    width:100mm;
-    height:50mm;
+    width: 84.9mm;
+    height: 35.6mm;
+    max-height: 35.6mm;
     display:flex;
     padding:2mm;
     border:1px dashed #ccc;
     background:#fff;
+    overflow: hidden;
 }
 
 .left{
-    width:28mm;
+    width:24mm; /* Reduzido em 20% para não esmagar as linhas */
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -112,13 +114,17 @@ button{
 .qr{
     width:22mm;
     height:22mm;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .code{
     font-size:9px;
     margin-top:1mm;
-    font-weight:bold;
+    font-weight:normal; /* Sem negrito para evitar borrões na impressão térmica */
     text-align:center;
+    letter-spacing: 0.5px;
 }
 
 .right{
@@ -132,41 +138,43 @@ button{
 .field{
     display:flex;
     align-items:flex-end;
-    font-size:4.5mm;
+    font-size:4.2mm; /* Proporção reduzida */
     font-weight:bold;
 }
 
 .line{
     flex:1;
     border-bottom:1px solid #000;
-    margin-left:3mm;
+    margin-left:2mm;
     margin-bottom:1mm;
 }
 
 /* PRINT */
 
-@media print{
-    @page{
-        size:100mm 50mm;
-        margin:0;
+@media print {
+    @page {
+        size: 84.9mm 35.6mm; /* Tamanho físico real enviado ao driver da Zebra */
+        margin: 0 !important;
     }
 
-    body{
+    body {
         background:#fff;
         padding:0;
     }
 
-    .container{
+    .container {
         display:none;
     }
 
-    #printArea{
+    #printArea {
         display:block;
     }
 
-    .zebra{
+    .zebra {
         border:none;
-        page-break-after:always;
+        margin: 0 !important;
+        page-break-after:always !important;
+        break-after: page !important;
     }
 }
 
@@ -243,8 +251,11 @@ function preview(){
 
     new QRCode(document.getElementById("prevqr"),{
         text:code,
-        width:120,
-        height:120
+        width:85, /* QR Code escalonado para 20% menor (85px) */
+        height:85,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.M
     });
 }
 
@@ -277,8 +288,11 @@ function generate(){
 
             new QRCode(document.getElementById("qr"+i),{
                 text:code,
-                width:120,
-                height:120
+                width:85, /* QR Code de impressão calibrado para 85px */
+                height:85,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
             });
         }
 
@@ -295,6 +309,14 @@ function reset(){
         alert("Zerado!");
     }
 }
+
+// Inicializador da memória sequencial automática
+window.onload = function() {
+    const saved = localStorage.getItem("last");
+    if(saved) {
+        document.getElementById("start").value = saved;
+    }
+};
 
 document.getElementById("prefix").oninput = preview;
 document.getElementById("start").oninput = preview;
