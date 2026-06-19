@@ -90,20 +90,20 @@ button{
     font-weight:bold;
 }
 
-/* ÁREA DA ETIQUETA COM MÁXIMA SEGURANÇA CONTRA EMBARALHAMENTO */
+/* FORMATO IDEAL PARA EVITAR EMBARALHAMENTO */
 .zebra{
     width: 84.9mm;
     height: 35.6mm;
     max-height: 35.6mm;
     display:flex;
-    padding: 3mm 2mm 3mm 3mm; /* Ajuste fino de margens internas */
+    padding: 3mm 2mm 3mm 3mm;
     background:#fff;
     border:1px dashed #ccc; /* Apenas referência na tela */
     overflow: hidden;
 }
 
 .left{
-    width: 20mm; /* Reduzido drasticamente para isolar o QR Code */
+    width: 20mm;
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -111,7 +111,7 @@ button{
 }
 
 .qr{
-    width: 65px; /* QR Code ultra compacto para não invadir o texto */
+    width: 65px;
     height: 65px;
     display: flex;
     justify-content: center;
@@ -119,25 +119,25 @@ button{
 }
 
 .code{
-    font-size:8px; /* Texto menor para nitidez térmica */
+    font-size:8px;
     margin-top:2mm;
-    font-weight:normal; /* Sem negrito para evitar borrões */
+    font-weight:normal;
     text-align:center;
     white-space: nowrap;
 }
 
 .right{
     flex:1;
-    padding-left: 5mm; /* Corredor de vento expandido para afastar o texto */
+    padding-left: 5mm;
     display:flex;
     flex-direction:column;
-    justify-content:space-between; /* Distribuição vertical perfeita */
+    justify-content:space-between;
 }
 
 .field{
     display:flex;
     align-items:flex-end;
-    font-size:3.8mm; /* Tamanho de letra seguro para não encavalar */
+    font-size:3.8mm;
     font-weight:bold;
     color: #000;
 }
@@ -149,29 +149,37 @@ button{
     margin-bottom:0.5mm;
 }
 
-/* PRINT */
+/* REGRAS DE IMPRESSÃO ESTÁVEIS (CORRIGE A TELA EM BRANCO) */
 @media print{
     @page{
         size: 84.9mm 35.6mm;
-        margin:0 !important;
+        margin: 0 !important;
     }
 
-    body{
-        background:#fff;
-        padding:0;
+    html, body{
+        background:#fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 84.9mm !important;
+        height: 35.6mm !important;
     }
 
     .container{
-        display:none;
+        display:none !important;
     }
 
     #printArea{
-        display:block;
+        display:block !important;
+        width: 84.9mm !important;
+        height: 35.6mm !important;
     }
 
     .zebra{
-        border:none;
-        margin:0 !important;
+        border:none !important;
+        margin: 0 !important;
+        padding: 3mm 2mm 3mm 3mm !important;
+        width: 84.9mm !important;
+        height: 35.6mm !important;
         page-break-after:always !important;
         break-after: page !important;
     }
