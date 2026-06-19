@@ -57,18 +57,18 @@
             align-items: center;
         }
 
-        /* Configuração de tamanho físico estrito: 84.9mm x 35.6mm */
+        /* Dimensões levemente reduzidas para criar zona de segurança anti-encavalamento */
         .zebra-label {
-            width: 84.9mm;
-            height: 35.6mm;
-            max-height: 35.6mm;
+            width: 82mm;
+            height: 32mm;
+            max-height: 32mm;
             background: white;
-            border: 1px dashed #ccc; /* Linha de referência apenas na tela */
-            padding: 2mm 3mm; /* Reduzido padding lateral para dar mais espaço */
+            border: 1px dashed #ccc; /* Linha de referência na tela */
+            padding: 2mm 3mm;
             box-sizing: border-box;
             display: flex;
             flex-direction: row;
-            justify-content: space-between; /* Empurra um bloco para cada ponta extrema */
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
             overflow: hidden;
@@ -77,20 +77,19 @@
             break-inside: avoid !important;
         }
 
-        /* Bloco Esquerdo: Afastado totalmente para a esquerda */
+        /* Bloco Esquerdo: QR Code + Código ajustados */
         .left-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 28mm;
+            width: 26mm;
             height: 100%;
-            margin-left: -1mm; /* Puxa levemente para a borda esquerda */
         }
 
         .qrcode-box {
-            width: 95px;
-            height: 95px;
+            width: 85px; /* Reduzido levemente para segurança */
+            height: 85px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -98,23 +97,22 @@
         }
 
         .label-code-text {
-            font-size: 10.5pt;
+            font-size: 10pt;
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
             text-align: center;
             white-space: nowrap;
         }
 
-        /* Bloco Direito: Linhas afastadas para a direita e com mais espaço vertical */
+        /* Bloco Direito: Compactado para não encavalar verticalmente */
         .fields-block {
-            font-size: 11pt;
-            line-height: 2.1; /* Aumentado o espaço entre Data, Local e Recebido */
-            width: 44mm; /* Ajustado o tamanho para não trombar no QR Code */
+            font-size: 10.5pt;
+            line-height: 1.7; /* Mais compacto para garantir que caiba na altura */
+            width: 45mm;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            margin-right: 1mm; /* Alinha firmemente na extremidade direita */
         }
 
         .field-item {
@@ -122,10 +120,10 @@
             width: 100%;
         }
 
-        /* CONFIGURAÇÃO PARA IMPRESSÃO TÉRMICA */
+        /* CONFIGURAÇÃO SEVERA PARA IMPRESSÃO TÉRMICA */
         @media print {
             @page {
-                size: 84.9mm 35.6mm;
+                size: 84.9mm 35.6mm; /* O driver continua lendo o papel total */
                 margin: 0 !important;
             }
             html, body {
@@ -146,9 +144,9 @@
                 border: none !important;
                 margin: 0 !important;
                 padding: 2mm 3mm !important;
-                width: 84.9mm !important;
-                height: 35.6mm !important;
-                max-height: 35.6mm !important;
+                width: 82mm !important;
+                height: 32mm !important;
+                max-height: 32mm !important;
                 page-break-after: always !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
@@ -221,8 +219,8 @@
 
                 new QRCode(document.getElementById(`qr-${i}`), {
                     text: fullCode,
-                    width: 95,
-                    height: 95,
+                    width: 85,
+                    height: 85,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
