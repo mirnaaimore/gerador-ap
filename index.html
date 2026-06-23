@@ -90,24 +90,26 @@ button{
     font-weight:bold;
 }
 
-/* FORMATO AJUSTADO PARA QR CODE MAIOR */
+/* FORMATO AJUSTADO PARA ETIQUETA DA ZEBRA */
 .zebra{
     width: 84.9mm;
     height: 35.6mm;
     max-height: 35.6mm;
     display:flex;
-    padding: 3mm 2mm 3mm 3mm;
+    position: relative; /* Necessário para ancorar o rodapé institucional */
+    padding: 2mm 2mm 5mm 3mm; /* Ajustado espaço inferior para o rodapé */
     background:#fff;
     border:1px dashed #ccc; /* Apenas referência na tela */
     overflow: hidden;
 }
 
 .left{
-    width: 26mm; /* Expandido para acomodar o QR Code de 90px */
+    width: 26mm; 
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
+    padding-bottom: 2mm;
 }
 
 .qr{
@@ -119,8 +121,8 @@ button{
 }
 
 .code{
-    font-size:14px;
-    margin-top:2mm;
+    font-size:12px; 
+    margin-top:1.5mm;
     font-weight:normal;
     text-align:center;
     white-space: nowrap;
@@ -132,7 +134,9 @@ button{
     padding-left: 5mm;
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
+    justify-content:flex-start;
+    gap: 2mm;
+    padding-top: 1mm;
 }
 
 .field{
@@ -148,6 +152,17 @@ button{
     border-bottom:1px solid #000;
     margin-left:2mm;
     margin-bottom:0.5mm;
+}
+
+/* RODAPÉ INSTITUCIONAL EXCLUSIVO FLAMENGO */
+.copyright{
+    position: absolute;
+    bottom: 1mm;
+    right: 3mm;
+    font-size: 10px;
+    color: #333;
+    font-weight: normal;
+    text-align: right;
 }
 
 /* REGRAS DE IMPRESSÃO ESTÁVEIS */
@@ -178,7 +193,7 @@ button{
     .zebra{
         border:none !important;
         margin: 0 !important;
-        padding: 3mm 2mm 3mm 3mm !important;
+        padding: 2mm 2mm 5mm 3mm !important;
         width: 84.9mm !important;
         height: 35.6mm !important;
         page-break-after:always !important;
@@ -208,7 +223,7 @@ button{
             </div>
             <div>
                 <label>Quantidade</label>
-                <input type="number" id="qty" value="100">
+                <input type="number" id="qty" value="1">
             </div>
         </div>
 
@@ -240,6 +255,8 @@ function makeLabel(code,id){
             <div class="field">Local<div class="line"></div></div>
             <div class="field">Recebido<div class="line"></div></div>
         </div>
+        
+        <div class="copyright">© 2026 Clube de Regatas do Flamengo</div>
     </div>`;
 }
 
