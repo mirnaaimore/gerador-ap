@@ -90,7 +90,7 @@ button{
     font-weight:bold;
 }
 
-/* FORMATO IDEAL PARA EVITAR EMBARALHAMENTO */
+/* FORMATO AJUSTADO PARA QR CODE MAIOR */
 .zebra{
     width: 84.9mm;
     height: 35.6mm;
@@ -103,7 +103,7 @@ button{
 }
 
 .left{
-    width: 20mm;
+    width: 26mm; /* Expandido de 20mm para 26mm para acomodar o QR Code maior */
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -111,8 +111,8 @@ button{
 }
 
 .qr{
-    width: 65px;
-    height: 65px;
+    width: 90px; /* Aumentado de 65px para 90px */
+    height: 90px; /* Aumentado de 65px para 90px */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -149,7 +149,7 @@ button{
     margin-bottom:0.5mm;
 }
 
-/* REGRAS DE IMPRESSÃO ESTÁVEIS (CORRIGE A TELA EM BRANCO) */
+/* REGRAS DE IMPRESSÃO ESTÁVEIS */
 @media print{
     @page{
         size: 84.9mm 35.6mm;
@@ -251,8 +251,8 @@ function preview(){
 
     new QRCode(document.getElementById("prevqr"),{
         text:code,
-        width:65,
-        height:65,
+        width:90, /* Tamanho atualizado na pré-visualização */
+        height:90,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.M
@@ -264,7 +264,7 @@ function generate(){
     const start = parseInt(document.getElementById("start").value);
     const qty = parseInt(document.getElementById("qty").value);
     const area = document.getElementById("printArea");
-    
+     
     area.innerHTML = "";
     let current = start;
 
@@ -280,8 +280,8 @@ function generate(){
             const code = document.getElementById("prefix").value + pad(i);
             new QRCode(document.getElementById("qr"+i),{
                 text:code,
-                width:65,
-                height:65,
+                width:90, /* Tamanho atualizado na geração final das etiquetas */
+                height:90,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.M
