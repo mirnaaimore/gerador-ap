@@ -103,7 +103,7 @@ button{
 }
 
 .left{
-    width: 26mm; /* Expandido de 20mm para 26mm para acomodar o QR Code maior */
+    width: 26mm; /* Expandido para acomodar o QR Code de 90px */
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -111,19 +111,20 @@ button{
 }
 
 .qr{
-    width: 90px; /* Aumentado de 65px para 90px */
-    height: 90px; /* Aumentado de 65px para 90px */
+    width: 90px; 
+    height: 90px; 
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .code{
-    font-size:11px;
+    font-size:12px; /* Alterado de 11px para 12px conforme solicitado */
     margin-top:2mm;
     font-weight:normal;
     text-align:center;
     white-space: nowrap;
+    color: #000;
 }
 
 .right{
@@ -198,7 +199,7 @@ button{
         <h1>Gerador de Etiquetas A&P</h1>
 
         <label>Prefixo</label>
-        <input id="prefix" value="2026-FLA">
+        <input id="prefix" value="APFLA-">
 
         <div class="row">
             <div>
@@ -251,7 +252,7 @@ function preview(){
 
     new QRCode(document.getElementById("prevqr"),{
         text:code,
-        width:90, /* Tamanho atualizado na pré-visualização */
+        width:90, 
         height:90,
         colorDark : "#000000",
         colorLight : "#ffffff",
@@ -280,7 +281,7 @@ function generate(){
             const code = document.getElementById("prefix").value + pad(i);
             new QRCode(document.getElementById("qr"+i),{
                 text:code,
-                width:90, /* Tamanho atualizado na geração final das etiquetas */
+                width:90, 
                 height:90,
                 colorDark : "#000000",
                 colorLight : "#ffffff",
